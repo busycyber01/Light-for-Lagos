@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Light for Lagos — Free Electricity Tokens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D1321;
+    --ink-2:#151B2E;
+    --ink-line:#2A3350;
+    --amber:#FFB43C;
+    --amber-dim:#8A5E22;
+    --glow:#4CE0B3;
+    --paper:#EDEFF2;
+    --paper-2:#FFFFFF;
+    --text-soft:#A9AFC3;
+    --text-dark:#1C2033;
+    --text-dark-soft:#5A6079;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--paper);
+    color:var(--text-dark);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    line-height:1.15;
+    letter-spacing:-0.01em;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  a{ color:inherit; }
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+  section{ padding:96px 0; }
+  @media (max-width:700px){ section{ padding:64px 0; } }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(13,19,33,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--ink-line);
+  }
+  .nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:16px; padding-bottom:16px;
+  }
+  .nav-brand{
+    color:var(--paper-2);
+    font-weight:700;
+    font-size:1.05rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-brand .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--glow);
+    box-shadow:0 0 8px var(--glow);
+  }
+  .nav-cta{
+    background:var(--amber);
+    color:var(--ink);
+    font-weight:600;
+    font-size:0.85rem;
+    padding:10px 18px;
+    border-radius:2px;
+    text-decoration:none;
+    letter-spacing:0.01em;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(76,224,179,0.10), transparent 45%),
+      radial-gradient(ellipse at 90% 10%, rgba(255,180,60,0.10), transparent 40%),
+      var(--ink);
+    color:var(--paper-2);
+    padding:100px 0 80px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--ink-line);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.75rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--glow);
+    margin-bottom:20px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:22px; height:1px;
+    background:var(--glow);
+  }
+  .hero h1{
+    font-size:clamp(2.1rem, 5vw, 3.4rem);
+    max-width:760px;
+    font-weight:700;
+  }
+  .hero h1 span{ color:var(--amber); }
+  .hero p.lede{
+    max-width:560px;
+    color:var(--text-soft);
+    font-size:1.08rem;
+    margin-top:22px;
+  }
+  .hero-actions{
+    display:flex; gap:14px; margin-top:36px; flex-wrap:wrap;
+  }
+  .btn-primary{
+    background:var(--amber);
+    color:var(--ink);
+    font-weight:600;
+    padding:14px 26px;
+    border-radius:2px;
+    text-decoration:none;
+    font-size:0.95rem;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,180,60,0.25); }
+  .btn-ghost{
+    border:1px solid var(--ink-line);
+    color:var(--paper-2);
+    padding:14px 26px;
+    border-radius:2px;
+    text-decoration:none;
+    font-size:0.95rem;
+  }
+  .btn-ghost:hover{ border-color:var(--glow); }
+
+  /* ---- token display (signature element) ---- */
+  .token-display{
+    margin-top:56px;
+    background:var(--ink-2);
+    border:1px solid var(--ink-line);
+    border-radius:4px;
+    padding:22px 24px;
+    max-width:480px;
+  }
+  .token-display .label-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:12px;
+  }
+  .token-display .label-row .lbl{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-soft);
+  }
+  .token-display .status{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    color:var(--glow);
+  }
+  .digits{
+    font-family:'JetBrains Mono', monospace;
+    font-size:clamp(1.15rem, 3vw, 1.55rem);
+    letter-spacing:0.12em;
+    color:var(--amber);
+    text-shadow:0 0 14px rgba(255,180,60,0.35);
+    min-height:1.6em;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+  .digits .cursor{
+    display:inline-block;
+    width:0.5em;
+    background:var(--amber);
+    animation:blink 0.9s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .token-display .meta{
+    margin-top:14px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    color:var(--text-soft);
+    display:flex; justify-content:space-between;
+  }
+
+  /* ---------- STORY ---------- */
+  .story{ background:var(--paper); }
+  .story .grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:56px;
+    align-items:start;
+  }
+  @media (max-width:800px){ .story .grid{ grid-template-columns:1fr; } }
+  .kicker{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dark-soft);
+    margin-bottom:14px;
+  }
+  .story h2{
+    font-size:clamp(1.5rem, 3vw, 2.1rem);
+    margin-bottom:20px;
+  }
+  .story p{ color:var(--text-dark-soft); max-width:52ch; }
+  .story p + p{ margin-top:14px; }
+  .stat-card{
+    background:var(--paper-2);
+    border:1px solid #DDE0E7;
+    border-radius:4px;
+    padding:24px;
+  }
+  .stat-card + .stat-card{ margin-top:14px; }
+  .stat-card .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.7rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .stat-card .cap{
+    font-size:0.85rem;
+    color:var(--text-dark-soft);
+    margin-top:4px;
+  }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .how{ background:var(--ink); color:var(--paper-2); }
+  .how .kicker{ color:var(--glow); }
+  .how h2{ color:var(--paper-2); font-size:clamp(1.5rem, 3vw, 2.1rem); margin-bottom:44px; max-width:520px; }
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:1px;
+    background:var(--ink-line);
+    border:1px solid var(--ink-line);
+  }
+  @media (max-width:800px){ .steps{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:480px){ .steps{ grid-template-columns:1fr; } }
+  .step{
+    background:var(--ink);
+    padding:28px 24px;
+  }
+  .step .n{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--amber);
+    font-size:0.85rem;
+    margin-bottom:14px;
+  }
+  .step h3{ font-size:1.02rem; margin-bottom:8px; color:var(--paper-2); }
+  .step p{ color:var(--text-soft); font-size:0.88rem; }
+
+  /* ---------- ELIGIBILITY ---------- */
+  .eligibility{ background:var(--paper); }
+  .elig-list{
+    list-style:none;
+    max-width:640px;
+  }
+  .elig-list li{
+    display:flex; gap:14px;
+    padding:16px 0;
+    border-bottom:1px solid #DDE0E7;
+    color:var(--text-dark-soft);
+  }
+  .elig-list li:first-child{ padding-top:0; }
+  .elig-list .mark{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--glow);
+    background:var(--ink);
+    width:22px; height:22px;
+    flex:0 0 22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.7rem;
+  }
+
+  /* ---------- FORM ---------- */
+  .apply{ background:var(--paper-2); border-top:1px solid #DDE0E7; border-bottom:1px solid #DDE0E7; }
+  .apply-card{
+    background:var(--ink);
+    color:var(--paper-2);
+    border-radius:6px;
+    padding:44px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  @media (max-width:600px){ .apply-card{ padding:28px 22px; } }
+  .apply-card h2{ font-size:1.6rem; margin-bottom:8px; }
+  .apply-card .sub{ color:var(--text-soft); font-size:0.92rem; margin-bottom:32px; }
+  .field{ margin-bottom:20px; }
+  .field label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-soft);
+    margin-bottom:8px;
+  }
+  .field input, .field select{
+    width:100%;
+    background:var(--ink-2);
+    border:1px solid var(--ink-line);
+    color:var(--paper-2);
+    padding:13px 14px;
+    border-radius:3px;
+    font-family:'Inter', sans-serif;
+    font-size:0.95rem;
+    outline:none;
+    transition:border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field input::placeholder{ color:#565E7A; }
+  .field input:focus, .field select:focus{
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px rgba(255,180,60,0.15);
+  }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:520px){ .field-row{ grid-template-columns:1fr; } }
+  .field .hint{ font-size:0.78rem; color:#6B7290; margin-top:6px; }
+  .submit-btn{
+    width:100%;
+    background:var(--amber);
+    color:var(--ink);
+    border:none;
+    padding:15px;
+    font-weight:700;
+    font-size:0.95rem;
+    border-radius:3px;
+    cursor:pointer;
+    margin-top:8px;
+    transition:transform 0.15s ease;
+  }
+  .submit-btn:hover{ transform:translateY(-1px); }
+  .form-note{
+    font-size:0.78rem;
+    color:var(--text-soft);
+    margin-top:16px;
+    text-align:center;
+  }
+  .form-success, .form-error{
+    display:none;
+    padding:16px;
+    border-radius:3px;
+    font-size:0.9rem;
+    margin-bottom:20px;
+  }
+  .form-success{ background:rgba(76,224,179,0.12); border:1px solid var(--glow); color:var(--glow); }
+  .form-error{ background:rgba(255,90,90,0.1); border:1px solid #FF6B6B; color:#FF9B9B; }
+
+  /* ---------- FAQ ---------- */
+  .faq{ background:var(--paper); }
+  .faq h2{ font-size:clamp(1.5rem, 3vw, 2.1rem); margin-bottom:36px; }
+  .faq-item{ border-bottom:1px solid #DDE0E7; }
+  .faq-q{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    padding:20px 0;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1rem;
+    font-weight:500;
+    color:var(--text-dark);
+    display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer;
+  }
+  .faq-q .icon{ font-family:'JetBrains Mono', monospace; color:var(--text-dark-soft); transition:transform 0.2s ease; }
+  .faq-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.25s ease;
+    color:var(--text-dark-soft);
+    font-size:0.92rem;
+  }
+  .faq-a p{ padding-bottom:20px; max-width:60ch; }
+  .faq-item.open .faq-q .icon{ transform:rotate(45deg); }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background:var(--ink); color:var(--text-soft); padding:48px 0; }
+  footer .wrap{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  footer .brand{ color:var(--paper-2); font-weight:700; font-family:'Space Grotesk', sans-serif; }
+  footer .small{ font-size:0.8rem; }
+  footer a{ text-decoration:none; }
+  footer a:hover{ color:var(--amber); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="nav-brand"><span class="dot"></span> Light for Lagos</div>
+    <a class="nav-cta" href="#apply">Apply for a token</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Free electricity token program</div>
+    <h1>Keeping the lights on for <span>Lagos households</span> who need it most.</h1>
+    <p class="lede">A free prepaid electricity token, given directly to families across Lagos State — no strings, no repayment. Fill in your details below and we'll verify and send your token.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#apply">Apply for a token</a>
+      <a class="btn-ghost" href="#how">How it works</a>
+    </div>
+
+    <div class="token-display">
+      <div class="label-row">
+        <span class="lbl">Sample token · prepaid meter</span>
+        <span class="status">● Ready to load</span>
+      </div>
+      <div class="digits" id="tokenDigits"></div>
+      <div class="meta">
+        <span>Disco: Ikeja Electric</span>
+        <span>Value: ₦0.00 — on us</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="story">
+  <div class="wrap grid">
+    <div>
+      <div class="kicker">Why this exists</div>
+      <h2>Light shouldn't be a luxury.</h2>
+      <p>Across Lagos, prepaid meters run dry at the worst possible moments — mid-exam-prep, mid-business, mid-week. Light for Lagos exists to close that gap for households who need a bridge, one free token at a time.</p>
+      <p>This is a direct, no-repayment gesture — funded and distributed transparently, with every token traceable to a verified meter and address before it's sent.</p>
+    </div>
+    <div>
+      <div class="stat-card">
+        <div class="num">100%</div>
+        <div class="cap">of tokens go directly to verified meters — no middlemen</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">&lt; 48hrs</div>
+        <div class="cap">typical time from application to token delivery</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="kicker">The process</div>
+    <h2>Four steps from application to a lit-up home.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="n">01</div>
+        <h3>Apply</h3>
+        <p>Fill in your name, contact, address, LGA and meter number below.</p>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h3>Verify</h3>
+        <p>We confirm the meter number and address match a real, active account.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h3>Token sent</h3>
+        <p>Your 20-digit token is sent by SMS or email, ready to load.</p>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <h3>Load it up</h3>
+        <p>Enter the code on your meter keypad the same way you always do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="eligibility">
+  <div class="wrap">
+    <div class="kicker">Before you apply</div>
+    <h2 style="font-size:clamp(1.5rem, 3vw, 2.1rem); margin-bottom:28px;">Who this is for.</h2>
+    <ul class="elig-list">
+      <li><span class="mark">✓</span> You have a working prepaid meter registered to your name or household.</li>
+      <li><span class="mark">✓</span> You live within one of Lagos State's Local Government Areas.</li>
+      <li><span class="mark">✓</span> One application per household — this keeps the program fair and stretches it further.</li>
+      <li><span class="mark">✓</span> You're comfortable being contacted by phone or email to confirm your details.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="apply" id="apply">
+  <div class="wrap">
+    <div class="apply-card">
+      <h2>Apply for your token</h2>
+      <p class="sub">Takes about a minute. We'll reach out to confirm before sending anything.</p>
+
+      <div class="form-success" id="formSuccess">Thank you — your application has been received. We'll be in touch shortly to verify your details.</div>
+      <div class="form-error" id="formError">Something went wrong sending your application. Please try again in a moment.</div>
+
+      <form id="tokenForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <input type="hidden" name="_subject" value="New Light for Lagos token application">
+
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" name="Full Name" placeholder="e.g. Adaeze Okonkwo" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" name="Phone Number" placeholder="080X XXX XXXX" required>
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="Email Address" placeholder="you@email.com">
+            <div class="hint">Optional — phone number is enough</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="address">Home address</label>
+          <input type="text" id="address" name="Home Address" placeholder="Street, area, city" required>
+        </div>
+
+        <div class="field">
+          <label for="lga">Local Government Area</label>
+          <select id="lga" name="Local Government Area" required>
+            <option value="" disabled selected>Select your LGA</option>
+            <option>Agege</option>
+            <option>Ajeromi-Ifelodun</option>
+            <option>Alimosho</option>
+            <option>Amuwo-Odofin</option>
+            <option>Apapa</option>
+            <option>Badagry</option>
+            <option>Epe</option>
+            <option>Eti-Osa</option>
+            <option>Ibeju-Lekki</option>
+            <option>Ifako-Ijaiye</option>
+            <option>Ikeja</option>
+            <option>Ikorodu</option>
+            <option>Kosofe</option>
+            <option>Lagos Island</option>
+            <option>Lagos Mainland</option>
+            <option>Mushin</option>
+            <option>Ojo</option>
+            <option>Oshodi-Isolo</option>
+            <option>Shomolu</option>
+            <option>Surulere</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="meter">Meter number</label>
+          <input type="text" id="meter" name="Meter Number" placeholder="e.g. 04012345678" required>
+          <div class="hint">Found on your meter or a past recharge receipt</div>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit application</button>
+        <p class="form-note">Your details are used only to verify and deliver your token — never sold or shared.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap">
+    <div class="kicker">Questions</div>
+    <h2>Frequently asked</h2>
+
+    <div class="faq-item open">
+      <button class="faq-q"><span>Is this actually free?</span><span class="icon">+</span></button>
+      <div class="faq-a"><p>Yes. There's no repayment, no hidden fee, and we will never ask for your card details, PIN, or bank information to send a token.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>How will I receive my token?</span><span class="icon">+</span></button>
+      <div class="faq-a"><p>By SMS or email, as a 20-digit code — the same kind you'd get from a normal recharge. You enter it directly on your meter's keypad.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>How long does it take?</span><span class="icon">+</span></button>
+      <div class="faq-a"><p>Most applications are verified and sent within 48 hours. If we can't reach you to confirm your details, we'll try again before your slot is released.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>What if I don't have a prepaid meter?</span><span class="icon">+</span></button>
+      <div class="faq-a"><p>This round is for prepaid meters only, since tokens load directly onto them. If that changes for postpaid households, it'll be announced here.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Is my data safe?</span><span class="icon">+</span></button>
+      <div class="faq-a"><p>Your information is used only to verify your meter and deliver your token. It isn't sold, shared, or used for anything else.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="brand">Light for Lagos</div>
+      <div class="small">A free electricity token initiative for Lagos State.</div>
+    </div>
+    <div class="small"><a href="#apply">Apply for a token →</a></div>
+  </div>
+</footer>
+
+<script>
+  // Hero token digit "recharge" animation
+  (function(){
+    const el = document.getElementById('tokenDigits');
+    const full = "4021 7756 8834 2209 61";
+    let i = 0;
+    function tick(){
+      if(i <= full.length){
+        el.innerHTML = full.slice(0, i) + '<span class="cursor">&nbsp;</span>';
+        i++;
+        setTimeout(tick, 65);
+      } else {
+        el.innerHTML = full;
+      }
+    }
+    tick();
+  })();
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const btn = item.querySelector('.faq-q');
+    const answer = item.querySelector('.faq-a');
+    if(item.classList.contains('open')){
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+    btn.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(other => {
+        other.classList.remove('open');
+        other.querySelector('.faq-a').style.maxHeight = 0;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // Formspree AJAX submit (keeps user on page, shows inline success/error)
+  const form = document.getElementById('tokenForm');
+  const successEl = document.getElementById('formSuccess');
+  const errorEl = document.getElementById('formError');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+    const data = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if(response.ok){
+        form.reset();
+        form.style.display = 'none';
+        successEl.style.display = 'block';
+      } else {
+        errorEl.style.display = 'block';
+      }
+    }).catch(() => {
+      errorEl.style.display = 'block';
+    });
+  });
+</script>
+
+</body>
+</html>
